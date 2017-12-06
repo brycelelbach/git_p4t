@@ -64,5 +64,5 @@ sudo apt-get install python bash make git perforce-cli asciidoc docbook xmlto
 [Perforce Helix Command-Line Client (p4)]:      https://www.perforce.com/downloads/helix-command-line-client-p4
 [AsciiDoc]:                                     https://asciidoc.org
 [DocBook]:                                      https://docbook.org
-[xmlto]:                                   https://pagure.io/xmlto
+[xmlto]:                                        https://pagure.io/xmlto
 
