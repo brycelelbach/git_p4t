@@ -1393,10 +1393,10 @@ class P4Submit(Command, P4UserMap):
         stripped_message = message[:m.start()].rstrip()
         return (stripped_message, jobtext)
 
-    def prepareLogMessage(self, template, message, jobs):
+    def prepareLogMessage(self, template, id, message, jobs):
         """Edits the template returned from "p4 change -o" to insert
-           the message in the Description field, and the jobs text in
-           the Jobs field."""
+           the message in the Description field, Git meta-data (author and commit
+           hash) in the Description field, and the jobs text in the Jobs field."""
         result = ""
 
         inDescriptionSection = False
@@ -1420,6 +1420,14 @@ class P4Submit(Command, P4UserMap):
                     line += "\n"
                     for messageLine in message.split("\n"):
                         line += "\t" + messageLine + "\n"
+
+                    # Add git commit hash
+                    line += "\tgit-commit " + id + "\n"
+
+                    # Add git author
+                    line += "\tgit-author "
+                    line += read_pipe(["git", "show", "-s",
+                                       "--format=format:%aN <%aE>", id]) + "\n"
 
             result += line + "\n"
 
@@ -1822,7 +1830,7 @@ class P4Submit(Command, P4UserMap):
         (logMessage, jobs) = self.separate_jobs_from_description(logMessage)
 
         template = self.prepareSubmitTemplate(self.update_shelve)
-        submitTemplate = self.prepareLogMessage(template, logMessage, jobs)
+        submitTemplate = self.prepareLogMessage(template, id, logMessage, jobs)
 
         if self.preserveUser:
            submitTemplate += "\n######## Actual user %s, modified after commit\n" % p4User
