@@ -5,7 +5,7 @@
 # `git-p4.1` is installed to $(INSTALL_ROOT)/share/man/man1
 INSTALL_ROOT ?= /usr/local
 
-GIT_VERSION ?= 2.15.1
+GIT_VERSION ?= 2.15.1-thrust
 
 .PHONY: install
 
