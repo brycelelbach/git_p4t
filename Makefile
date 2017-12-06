@@ -25,5 +25,5 @@ clean:
 	mv $*.tmp.xml $@
 
 %.1: %.xml
-	xmlto -m manpage-normal.xsl -m manpage-bold-literal.xsl man $@
+	xmlto -m manpage-normal.xsl -m manpage-bold-literal.xsl man $<
 
