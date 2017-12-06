@@ -11,7 +11,7 @@ GIT_VERSION ?= 2.15.1
 
 install: git-p4.1
 	mkdir -p $(INSTALL_ROOT)/bin
-	cp git-p4.py $(INSTALL_ROOT)/bin
+	cp git-p4.py $(INSTALL_ROOT)/bin/git-p4
 	mkdir -p $(INSTALL_ROOT)/share/man/man1
 	cp git-p4.1 $(INSTALL_ROOT)/share/man/man1
 
