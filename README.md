@@ -51,7 +51,7 @@ First, to install the Perforce Command-Line Client (p4) on Debian or Ubuntu
   systems, you'll need to add their Debian package repository to your list of
   Debian package sources:
 
-```
+```bash
 deb http://package.perforce.com/apt/ubuntu trusty release
 ```
 
