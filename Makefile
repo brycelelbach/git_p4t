@@ -26,4 +26,5 @@ clean:
 
 %.1: %.xml
 	xmlto -m manpage-normal.xsl -m manpage-bold-literal.xsl man $<
+	chmod 644 $@
 
