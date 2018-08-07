@@ -76,6 +76,13 @@ Then, you can just run `make` to build and install this software:
 sudo make install
 ```
 
+By default, this will install into `/usr/local`.
+You can control the install root with the `INSTALL_ROOT` variable:
+
+```bash
+make install INSTALL_ROOT=/my/install/root
+```
+
 [NVIDIA's CUDA Thrust library]:                 https://thrust.github.com
 [GNU General Public License version 2 (GPLv2)]: https://opensource.org/licenses/GPL-2.0
 [MIT License]:                                  https://opensource.org/licenses/mit-license.php
