@@ -7,7 +7,7 @@ Distributed under the MIT License (http://www.opensource.org/licenses/mit-licens
 
 # CUDA Thrust `git-p4`
 
-*Reply-To:* Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
+*Reply-To:* [Bryce Adelstein Lelbach aka wash](brycelelbach@gmail.com)
 
 This repository contains a modified version of `git-p4.py` (which is part of
   the main [Git] distribution) with some extra functionality required by
@@ -21,7 +21,7 @@ Parts of this software are distributed under the [GNU Public License version 2 (
   and parts of this software are distributed under the [MIT License].
 See [LICENSE.md](LICENSE.md) for further details.
 
-### Prerequisites
+## Prerequisites
 
 This software is designed to work on Linux-based operating systems.
 
@@ -68,7 +68,7 @@ After you've done that, the following will install all of the requried
 sudo apt-get install python bash make git perforce-cli asciidoc docbook xmlto
 ```
 
-### Building and Installing
+## Building and Installing
 
 You can just run `make` to build and install this software:
 

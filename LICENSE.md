@@ -7,9 +7,9 @@ Distributed under the MIT License (http://www.opensource.org/licenses/mit-licens
 
 # CUDA Thrust `git-p4`
 
-## Software Licensing Information
+*Reply-To:* [Bryce Adelstein Lelbach aka wash](brycelelbach@gmail.com)
 
-*Reply-To:* Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
+## Software Licensing Information
 
 This project contains code which was imported from the [Git] source code and
   then modified. 
