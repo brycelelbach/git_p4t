@@ -15,8 +15,8 @@ It has the following added features:
 * Automatic insertion of Git commit hashes and Git author ids into Perforce
     changelist descriptions.
 
-Parts of the code are distributed under the [GNU Public License version 2 (GPLv2)]
-  and parts of the code are distributed under the [MIT License].
+Parts of this software are distributed under the [GNU Public License version 2 (GPLv2)]
+  and parts of this software are distributed under the [MIT License].
 See [LICENSE.md](LICENSE.md) for further details.
 
 ### Prerequisites
