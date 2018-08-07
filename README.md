@@ -1,11 +1,13 @@
 <!--
-Distributed under the MIT License
-http://www.opensource.org/licenses/mit-license.php
+Copyright (c) 2017-8 NVIDIA Corporation
+Reply-To: Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
+
+Distributed under the MIT License (http://www.opensource.org/licenses/mit-license.php)
 -->
 
 # CUDA Thrust `git-p4`
 
-*Reply-To:* blelbach@nvidia.com
+*Reply-To:* Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
 
 This repository contains a modified version of `git-p4.py` (which is part of
   the main [Git] distribution) with some extra functionality required by

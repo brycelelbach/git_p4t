@@ -1,13 +1,15 @@
 <!--
-Distributed under the MIT License
-http://www.opensource.org/licenses/mit-license.php
+Copyright (c) 2017-8 NVIDIA Corporation
+Reply-To: Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
+
+Distributed under the MIT License (http://www.opensource.org/licenses/mit-license.php)
 -->
 
 # CUDA Thrust `git-p4`
 
 ## Software Licensing Information
 
-*Reply-To:* blelbach@nvidia.com
+*Reply-To:* Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
 
 This project contains code which was imported from the [Git] source code and
   then modified. 
@@ -22,10 +24,11 @@ Some of these imported files (those relating to the `git-p4` manpage) do not
 | `git-p4.py`                | Imported from Git | MIT     |
 | `import_from_upstream.sh`  | New               | MIT     |
 | `Makefile`                 | New               | MIT     |
-| `LICENSE.md`               | Imported from Git | MIT     |
+| `LICENSE.md`               | New               | MIT     |
 | `README.md`                | New               | MIT     |
 | `git-p4.txt`               | Imported from Git | GPLv2   |
 | `asciidoc.conf`            | Imported from Git | GPLv2   |
+| `manpage-base.xsl`         | Imported from Git | GPLv2   |
 | `manpage-bold-literal.xsl` | Imported from Git | GPLv2   |
 | `manpage-normal.xsl`       | Imported from Git | GPLv2   |
 

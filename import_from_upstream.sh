@@ -1,5 +1,7 @@
-# Distributed under the MIT License
-# http://www.opensource.org/licenses/mit-license.php
+# Copyright (c) 2017-8 NVIDIA Corporation
+# Reply-To: Bryce Adelstein Lelbach aka wash <brycelelbach@gmail.com>
+# 
+# Distributed under the MIT License (http://www.opensource.org/licenses/mit-license.php)
 #
 #! /bin/bash
 
