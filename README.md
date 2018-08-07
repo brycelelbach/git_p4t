@@ -12,7 +12,7 @@ This repository contains a modified version of `git-p4.py` (which is part of
   [NVIDIA's CUDA Thrust library].
 It has the following added features:
 
-* Automatic insertion of Git commit hashes and Git author ids into Perforce
+- Automatic insertion of Git commit hashes and Git author ids into Perforce
     changelist descriptions.
 
 Parts of this software are distributed under the [GNU Public License version 2 (GPLv2)]
