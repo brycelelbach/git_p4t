@@ -45,9 +45,7 @@ These are needed to build the git-p4 manpage.
 | [DocBook]                           | 4.5     |
 | [xmlto]                             | 0.0.2   |
 
-### Building and Installing (Debian or Ubuntu Linux)
-
-First, to install the Perforce Command-Line Client (p4) on Debian or Ubuntu
+To install the Perforce Command-Line Client (p4) on Debian or Ubuntu
   systems, you'll need to add their Debian package repository to your list of
   Debian package sources:
 
@@ -70,7 +68,9 @@ After you've done that, the following will install all of the requried
 sudo apt-get install python bash make git perforce-cli asciidoc docbook xmlto
 ```
 
-Then, you can just run `make` to build and install this software:
+### Building and Installing
+
+You can just run `make` to build and install this software:
 
 ```bash
 sudo make install
