@@ -2269,6 +2269,19 @@ class P4Unify(Command):
         self.branch = "master"
 
     def run(self, args):
+        # ensure the clientPath exists
+        new_client_dir = False
+        if not os.path.exists(self.clientPath):
+            new_client_dir = True
+            os.makedirs(self.clientPath)
+
+        print "Synchronizing p4 checkout..."
+        if new_client_dir:
+            # old one was destroyed, and maybe nobody told p4
+            p4_sync("...", "-f")
+        else:
+            p4_sync("...")
+
         system(["git", "update-ref", "refs/remotes/p4/%s" % (self.branch), "HEAD"])
 
         # Create a symbolic ref p4/HEAD pointing to p4/<branch> to allow
