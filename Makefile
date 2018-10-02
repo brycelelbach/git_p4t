@@ -5,19 +5,19 @@
 
 BUILD_ROOT ?= build
 
-# `git-p4.py` is installed to $(INSTALL_ROOT)/bin
-# `git-p4.1` is installed to $(INSTALL_ROOT)/share/man/man1
 INSTALL_ROOT ?= /usr/local
 
 GIT_VERSION ?= 2.15.1-thrust
 
 .PHONY: install
 
-install: git-p4.1 $(BUILD_ROOT)/
+install: git-p4.1 git-p4t.1 $(BUILD_ROOT)/
 	mkdir -p $(INSTALL_ROOT)/bin
 	cp git-p4.py $(INSTALL_ROOT)/bin/git-p4
+	cp git-p4t.py $(INSTALL_ROOT)/bin/git-p4t
 	mkdir -p $(INSTALL_ROOT)/share/man/man1
 	cp $(BUILD_ROOT)/git-p4.1 $(INSTALL_ROOT)/share/man/man1
+	cp $(BUILD_ROOT)/git-p4t.1 $(INSTALL_ROOT)/share/man/man1
 
 $(BUILD_ROOT)/:
 	mkdir -p $(BUILD_ROOT)/

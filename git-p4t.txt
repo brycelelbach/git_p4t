@@ -1,0 +1,288 @@
+git-p4t(1)
+==========
+
+NAME
+----
+git-p4t - Transparently submit from a Git repository to a Perforce depot.
+
+
+SYNOPSIS
+--------
+[verse]
+'git p4t unify'
+'git p4t submit' [<submit options>] [<master branch name>]
+
+
+DESCRIPTION
+-----------
+This command provides a way to submit commits from a Git repository to a Perforce
+depot without rewriting or modifying the Git commits.
+
+Indicate that Git and Perforce history are synchronized with 'git p4t unify'.
+Submit new Git changes to p4 using 'git p4t submit'.
+
+EXAMPLE
+-------
+* Clone a Git repository:
++
+------------
+$ git init ...
+------------
+
+* Inidicate that Git and Perforce are synced:
++
+------------
+$ git p4t unify ...
+------------
+
+* Do some work in the newly created Git repository:
++
+------------
+$ cd project
+$ vi foo.h
+$ git commit -a -m "edited foo.h"
+------------
+
+* Submit your commits to p4:
++
+------------
+$ git p4t submit
+------------
+
+
+COMMANDS
+--------
+
+
+Submit
+~~~~~~
+Submitting changes from a Git repository back to the p4 repository
+requires a separate p4 client workspace.  This should be specified
+using the `P4CLIENT` environment variable or the Git configuration
+variable 'git-p4.client'.  The p4 client must exist, but the client root
+will be created and populated if it does not already exist.
+
+To submit all changes that are in the current Git branch but not in
+the 'p4/master' branch, use:
+------------
+$ git p4t submit
+------------
+
+To specify a branch other than the current one, use:
+------------
+$ git p4t submit topicbranch
+------------
+
+The upstream reference is generally 'refs/remotes/p4/master', but can
+be overridden using the `--origin=` command-line option.
+
+The p4 changes will be created as the user invoking 'git p4t submit'. The
+`--preserve-user` option will cause ownership to be modified
+according to the author of the Git commit.  This option requires admin
+privileges in p4, which can be granted using 'p4 protect'.
+
+Unify
+~~~~~
+This command will update the Git refs used to track which commits have been
+pushed to p4 to point to `HEAD`. It should be used at least once before using
+`git p4t submit`.
+
+OPTIONS
+-------
+
+General options
+~~~~~~~~~~~~~~~
+All commands except clone accept these options.
+
+--git-dir <dir>::
+	Set the `GIT_DIR` environment variable.  See linkgit:git[1].
+
+-v::
+--verbose::
+	Provide more progress information.
+
+Submit options
+~~~~~~~~~~~~~~
+These options can be used to modify 'git p4t submit' behavior.
+
+--origin <commit>::
+	Upstream location from which commits are identified to submit to
+	p4.  By default, this is the most recent p4 commit reachable
+	from `HEAD`.
+
+-M::
+	Detect renames.  See linkgit:git-diff[1].  Renames will be
+	represented in p4 using explicit 'move' operations.  There
+	is no corresponding option to detect copies, but there are
+	variables for both moves and copies.
+
+--preserve-user::
+	Re-author p4 changes before submitting to p4.  This option
+	requires p4 admin privileges.
+
+--export-labels::
+	Export tags from Git as p4 labels. Tags found in Git are applied
+	to the perforce working directory.
+
+-n::
+--dry-run::
+	Show just what commits would be submitted to p4; do not change
+	state in Git or p4.
+
+--prepare-p4-only::
+	Apply a commit to the p4 workspace, opening, adding and deleting
+	files in p4 as for a normal submit operation.  Do not issue the
+	final "p4 submit", but instead print a message about how to
+	submit manually or revert.  This option always stops after the
+	first (oldest) commit.  Git tags are not exported to p4.
+
+--shelve::
+	Instead of submitting create a series of shelved changelists.
+	After creating each shelve, the relevant files are reverted/deleted.
+	If you have multiple commits pending multiple shelves will be created.
+
+--update-shelve CHANGELIST::
+	Update an existing shelved changelist with this commit. Implies
+	--shelve.
+
+--conflict=(ask|skip|quit)::
+	Conflicts can occur when applying a commit to p4.  When this
+	happens, the default behavior ("ask") is to prompt whether to
+	skip this commit and continue, or quit.  This option can be used
+	to bypass the prompt, causing conflicting commits to be automatically
+	skipped, or to quit trying to apply commits, without prompting.
+
+--branch <branch>::
+	After submitting, sync this named branch instead of the default
+	p4/master.  See the "Sync options" section above for more
+	information.
+
+CLIENT SPEC
+-----------
+The p4 client specification is maintained with the 'p4 client' command
+and contains among other fields, a View that specifies how the depot
+is mapped into the client repository.  The 'clone' and 'sync' commands
+can consult the client spec when given the `--use-client-spec` option or
+when the useClientSpec variable is true.  After 'git p4 clone', the
+useClientSpec variable is automatically set in the repository
+configuration file.  This allows future 'git p4 submit' commands to
+work properly; the submit command looks only at the variable and does
+not have a command-line option.
+
+The full syntax for a p4 view is documented in 'p4 help views'.  'git p4'
+knows only a subset of the view syntax.  It understands multi-line
+mappings, overlays with '+', exclusions with '-' and double-quotes
+around whitespace.  Of the possible wildcards, 'git p4' only handles
+'...', and only when it is at the end of the path.  'git p4' will complain
+if it encounters an unhandled wildcard.
+
+Bugs in the implementation of overlap mappings exist.  If multiple depot
+paths map through overlays to the same location in the repository,
+'git p4' can choose the wrong one.  This is hard to solve without
+dedicating a client spec just for 'git p4'.
+
+The name of the client can be given to 'git p4t' in multiple ways.  The
+variable 'git-p4.client' takes precedence if it exists.  Otherwise,
+normal p4 mechanisms of determining the client are used:  environment
+variable P4CLIENT, a file referenced by P4CONFIG, or the local host name.
+
+CONFIGURATION VARIABLES
+-----------------------
+The following config settings can be used to modify 'git p4t' behavior.
+They all are in the 'git-p4' section.
+
+General variables
+~~~~~~~~~~~~~~~~~
+git-p4.user::
+	User specified as an option to all p4 commands, with '-u <user>'.
+	The environment variable 'P4USER' can be used instead.
+
+git-p4.password::
+	Password specified as an option to all p4 commands, with
+	'-P <password>'.
+	The environment variable 'P4PASS' can be used instead.
+
+git-p4.port::
+	Port specified as an option to all p4 commands, with
+	'-p <port>'.
+	The environment variable 'P4PORT' can be used instead.
+
+git-p4.host::
+	Host specified as an option to all p4 commands, with
+	'-h <host>'.
+	The environment variable 'P4HOST' can be used instead.
+
+git-p4.client::
+	Client specified as an option to all p4 commands, with
+	'-c <client>', including the client spec.
+
+git-p4.retries::
+	Specifies the number of times to retry a p4 command (notably,
+	'p4 sync') if the network times out. The default value is 3.
+	Set the value to 0 to disable retries or if your p4 version
+	does not support retries (pre 2012.2).
+
+git-p4.depotPath::
+  The depot path stripped from each file during submission. By default, '//'.
+
+Submit variables
+~~~~~~~~~~~~~~~~
+git-p4.detectRenames::
+	Detect renames.  See linkgit:git-diff[1].  This can be true,
+	false, or a score as expected by 'git diff -M'.
+
+git-p4.detectCopies::
+	Detect copies.  See linkgit:git-diff[1].  This can be true,
+	false, or a score as expected by 'git diff -C'.
+
+git-p4.detectCopiesHarder::
+	Detect copies harder.  See linkgit:git-diff[1].  A boolean.
+
+git-p4.preserveUser::
+	On submit, re-author changes to reflect the Git author,
+	regardless of who invokes 'git p4t submit'.
+
+git-p4.allowMissingP4Users::
+	When 'preserveUser' is true, 'git p4t' normally dies if it
+	cannot find an author in the p4 user map.  This setting
+	submits the change regardless.
+
+git-p4.skipSubmitEdit::
+	The submit process invokes the editor before each p4 change
+	is submitted.  If this setting is true, though, the editing
+	step is skipped.
+
+git-p4.skipSubmitEditCheck::
+	After editing the p4 change message, 'git p4t' makes sure that
+	the description really was changed by looking at the file
+	modification time.  This option disables that test.
+
+git-p4.allowSubmit::
+	By default, any branch can be used as the source for a 'git p4t
+	submit' operation.  This configuration variable, if set, permits only
+	the named branches to be used as submit sources.  Branch names
+	must be the short names (no "refs/heads/"), and should be
+	separated by commas (","), with no spaces.
+
+git-p4.skipUserNameCheck::
+	If the user running 'git p4t submit' does not exist in the p4
+	user map, 'git p4t' exits.  This option can be used to force
+	submission regardless.
+
+git-p4.attemptRCSCleanup::
+	If enabled, 'git p4t submit' will attempt to cleanup RCS keywords
+	($Header$, etc). These would otherwise cause merge conflicts and prevent
+	the submit going ahead. This option should be considered experimental at
+	present.
+
+git-p4.exportLabels::
+	Export Git tags to p4 labels, as per --export-labels.
+
+git-p4.labelExportRegexp::
+	Only p4 labels matching this regular expression will be exported. The
+	default value is '[a-zA-Z0-9_\-.]+$'.
+
+git-p4.conflict::
+	Specify submit behavior when a conflict with p4 is found, as per
+	--conflict.  The default behavior is 'ask'.
+
