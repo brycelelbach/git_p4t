@@ -1338,6 +1338,7 @@ class P4Submit(Command, P4UserMap):
                         line += "\t" + messageLine + "\n"
 
                     # Add git commit hash
+                    line += "\n"
                     line += "\tgit-commit " + id + "\n"
 
                     # Add git author
