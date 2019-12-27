@@ -45,9 +45,9 @@ It also automatically inserts the Git commit hashes and Git author ids into
 
 However, `git p4t` does give users greater freedom in manually controlling
   what Git commits are considered submitted to Perforce.
-The `git p4t unify` command (which replaces `git p4t init`):manually sets the
+The `git p4t unify` command (which replaces `git p4t init`) manually sets the
   commit that the `git p4t` tool belives Perforce is synchronized with to
-  `HEAD`.
+  a specified Git commitish (`HEAD` by default).
 
 Unlike [Perforce GitFusion], `git p4t` does not require a service to be running
   on a central server, does not require Perforce administrative access, and does
