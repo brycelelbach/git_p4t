@@ -139,9 +139,9 @@ def calcDiskFree():
 
 def die(msg):
     if verbose:
-        raise Exception(msg)
+        raise Exception("Error: " + msg)
     else:
-        sys.stderr.write(msg + "\n")
+        sys.stderr.write("Error: " + msg + "\n")
         sys.exit(1)
 
 def write_pipe(c, stdin):
@@ -154,7 +154,7 @@ def write_pipe(c, stdin):
     val = pipe.write(stdin)
     pipe.close()
     if p.wait():
-        die('Command failed: %s' % str(c))
+        die('command failed: %s' % str(c))
 
     return val
 
@@ -163,7 +163,7 @@ def p4_write_pipe(c, stdin):
     return write_pipe(real_cmd, stdin)
 
 def read_pipe_full(c):
-    """ Read output from  command. Returns a tuple
+    """ Read output from command. Returns a tuple
         of the return status, stdout text and stderr
         text.
     """
@@ -176,7 +176,7 @@ def read_pipe_full(c):
     return (p.returncode, out, err)
 
 def read_pipe(c, ignore_error=False):
-    """ Read output from  command. Returns the output text on
+    """ Read output from command. Returns the output text on
         success. On failure, terminates execution, unless
         ignore_error is True, when it returns an empty string.
     """
@@ -185,7 +185,7 @@ def read_pipe(c, ignore_error=False):
         if ignore_error:
             out = ""
         else:
-            die('Command failed: %s\nError: %s' % (str(c), err))
+            die('command failed: %s: %s' % (str(c), err))
     return out
 
 def read_pipe_text(c):
@@ -211,7 +211,7 @@ def read_pipe_lines(c):
     pipe = p.stdout
     val = pipe.readlines()
     if pipe.close() or p.wait():
-        die('Command failed: %s' % str(c))
+        die('command failed: %s' % str(c))
 
     return val
 
@@ -441,7 +441,7 @@ def getP4OpenedType(file):
     if match:
         return match.group(1)
     else:
-        die("Could not determine file type for %s (result: '%s')" % (file, result))
+        die("could not determine file type for %s (result: '%s')" % (file, result))
 
 # Return the set of all p4 labels
 def getP4Labels(depotPaths):
@@ -677,7 +677,7 @@ def gitConfig(key, typeSpecifier=None):
     return _gitConfig[key]
 
 def gitConfigBool(key):
-    """Return a bool, using git config --bool.  It is True only if the
+    """Return a bool, using git config --bool. It is True only if the
        variable is set to true, and False if set to false or not present
        in the config."""
 
@@ -859,7 +859,7 @@ def p4ChangesForPaths(depotPaths, changeRange, requestedBlockSize):
         # Insert changes in chronological order
         for entry in reversed(p4CmdList(cmd)):
             if entry.has_key('p4ExitCode'):
-                die('Error retrieving changes descriptions ({})'.format(entry['p4ExitCode']))
+                die('failed to retrieve changes descriptions ({})'.format(entry['p4ExitCode']))
             if not entry.has_key('change'):
                 continue
             changes.add(int(entry['change']))
@@ -893,7 +893,7 @@ def getClientSpec():
 
     specList = p4CmdList("client -o")
     if len(specList) != 1:
-        die('Output from "client -o" is %d lines, expecting 1' %
+        die('output from "client -o" is %d lines, expecting 1' %
             len(specList))
 
     # dictionary of all client parameters
@@ -912,7 +912,7 @@ def getClientSpec():
     for view_num in range(len(view_keys)):
         k = "View%d" % view_num
         if k not in view_keys:
-            die("Expected view key %s missing" % k)
+            die("expected view key %s missing" % k)
         view.append(entry[k])
 
     return view
@@ -922,11 +922,11 @@ def getClientRoot():
 
     output = p4CmdList("client -o")
     if len(output) != 1:
-        die('Output from "client -o" is %d lines, expecting 1' % len(output))
+        die('output from "client -o" is %d lines, expecting 1' % len(output))
 
     entry = output[0]
     if "Root" not in entry:
-        die('Client has no "Root"')
+        die('client has no "Root"')
 
     return entry["Root"]
 
@@ -1089,7 +1089,7 @@ class GitLFS(LargeFileSystem):
         pointerFile = pointerProcess.stdout.read()
         if pointerProcess.wait():
             os.remove(contentFile)
-            die('git-lfs pointer command failed. Did you install the extension?')
+            die('git-lfs pointer command failed (is it installed?)')
 
         # Git LFS removed the preamble in the output of the 'pointer' command
         # starting from version 1.2.0. Check for the preamble here to support
@@ -1113,7 +1113,7 @@ class GitLFS(LargeFileSystem):
             ['git', 'lfs', 'push', '--object-id', 'origin', os.path.basename(localLargeFile)]
         )
         if uploadProcess.wait():
-            die('git-lfs push command failed. Did you define a remote?')
+            die('git-lfs push command failed (is a remote defined?)')
 
     def generateGitAttributes(self):
         return (
@@ -1167,7 +1167,7 @@ class P4UserMap:
             if r.has_key('User'):
                 self.myP4UserId = r['User']
                 return r['User']
-        die("Could not find your p4 user id")
+        die("could not find your p4 user id")
 
     def p4UserIsMe(self, p4User):
         # return True if the given p4 user is actually me
@@ -1263,8 +1263,8 @@ class P4Submit(Command, P4UserMap):
                                      metavar="CHANGELIST",
                                      help="update an existing shelved changelist, implies --shelve")
         ]
-        self.description = "Submit changes from git to the perforce depot."
-        self.usage += " [name of git branch to submit into perforce depot]"
+        self.description = "Submit changes from Git to the Perforce depot."
+        self.usage += " [git branch to submit]"
         self.origin = ""
         self.detectRenames = False
         self.preserveUser = gitConfigBool("git-p4.preserveUser")
@@ -1279,11 +1279,11 @@ class P4Submit(Command, P4UserMap):
         self.branch = "master"
 
         if gitConfig('git-p4.largeFileSystem'):
-            die("Large file system not supported for git-p4 submit command. Please remove it from config.")
+            die("large file system not supported for git-p4 submit command")
 
     def check(self):
         if len(p4CmdList("opened ...")) > 0:
-            die("You have files opened with perforce! Close them before starting the sync.")
+            die("you have files opened with Perforce, close them before starting the sync")
 
     def separate_jobs_from_description(self, message):
         """Extract and return a possible Jobs field in the commit
@@ -1389,11 +1389,11 @@ class P4Submit(Command, P4UserMap):
         for id in commits:
             (user,email) = self.p4UserForCommit(id)
             if not user:
-                msg = "Cannot find p4 user for email %s in commit %s." % (email, id)
+                msg = "cannot find p4 user for email %s in commit %s" % (email, id)
                 if gitConfigBool("git-p4.allowMissingP4Users"):
                     print "%s" % msg
                 else:
-                    die("Error: %s\nSet git-p4.allowMissingP4Users to true to allow this." % msg)
+                    die("%s: set git-p4.allowMissingP4Users to true to allow this" % msg)
 
     def lastP4Changelist(self):
         # Get back the last changelist number submitted in this client spec. This
@@ -1412,13 +1412,13 @@ class P4Submit(Command, P4UserMap):
         for r in results:
             if r.has_key('change'):
                 return r['change']
-        die("Could not get changelist number for last submit - cannot patch up user details")
+        die("could not get changelist number for last submit and thus cannot patch up user details")
 
     def modifyChangelistUser(self, changelist, newUser):
         # fixup the user field of a changelist after it has been submitted.
         changes = p4CmdList("change -o %s" % changelist)
         if len(changes) != 1:
-            die("Bad output from p4 change modifying %s to user %s" %
+            die("bad output from p4 change modifying %s to user %s" %
                 (changelist, newUser))
 
         c = changes[0]
@@ -1430,11 +1430,11 @@ class P4Submit(Command, P4UserMap):
         for r in result:
             if r.has_key('code'):
                 if r['code'] == 'error':
-                    die("Could not modify user field of changelist %s to %s:%s" % (changelist, newUser, r['data']))
+                    die("could not modify user field of changelist %s to %s:%s" % (changelist, newUser, r['data']))
             if r.has_key('data'):
                 print("Updated user field for changelist %s to %s" % (changelist, newUser))
                 return
-        die("Could not modify user field of changelist %s to %s" % (changelist, newUser))
+        die("could not modify user field of changelist %s to %s" % (changelist, newUser))
 
     def canChangeChangelists(self):
         # check to see if we have p4 admin or super-user permissions, either of
@@ -1485,7 +1485,7 @@ class P4Submit(Command, P4UserMap):
                 change_entry = entry
                 break
         if not change_entry:
-            die('Failed to decode output of p4 change -o')
+            die('failed to decode output of p4 change -o')
         for key, value in change_entry.iteritems():
             if key.startswith('File'):
                 if not p4PathStartsWith(value, self.depotPath):
@@ -1926,7 +1926,7 @@ class P4Submit(Command, P4UserMap):
         elif len(args) == 1:
             self.master = args[0]
             if not branchExists(self.master):
-                die("Branch %s does not exist" % self.master)
+                die("branch %s does not exist" % self.master)
         else:
             return False
 
@@ -1948,14 +1948,14 @@ class P4Submit(Command, P4UserMap):
 
         if self.preserveUser:
             if not self.canChangeChangelists():
-                die("Cannot preserve user names without p4 super-user or admin permissions")
+                die("cannot preserve user names without p4 super-user or admin permissions")
 
         # if not set from the command line, try the config file
         if self.conflict_behavior is None:
             val = gitConfig("git-p4.conflict")
             if val:
                 if val not in self.conflict_behavior_choices:
-                    die("Invalid value '%s' for config git-p4.conflict" % val)
+                    die("invalid value '%s' for config git-p4.conflict" % val)
             else:
                 val = "ask"
             self.conflict_behavior = val
@@ -1979,7 +1979,7 @@ class P4Submit(Command, P4UserMap):
             self.clientPath = p4Where(self.depotPath)
 
         if self.clientPath == "":
-            die("Error: Cannot locate perforce checkout of %s in client view" % self.depotPath)
+            die("cannot locate Perforce checkout of %s in client view" % self.depotPath)
 
         print "Perforce checkout for depot path %s located at %s" % (self.depotPath, self.clientPath)
         self.oldWorkingDirectory = os.getcwd()
@@ -2092,7 +2092,7 @@ class P4Submit(Command, P4UserMap):
                         elif self.conflict_behavior == "quit":
                             response = "q"
                         else:
-                            die("Unknown conflict_behavior '%s'" %
+                            die("unknown conflict_behavior '%s'" %
                                 self.conflict_behavior)
 
                         if response[0] == "s":
@@ -2182,14 +2182,14 @@ class View(object):
             # First word is double quoted.  Find its end.
             close_quote_index = view_line.find('"', 1)
             if close_quote_index <= 0:
-                die("No first-word closing quote found: %s" % view_line)
+                die("no first-word closing quote found: %s" % view_line)
             depot_side = view_line[1:close_quote_index]
             # skip closing quote and space
             rhs_index = close_quote_index + 1 + 1
         else:
             space_index = view_line.find(" ")
             if space_index <= 0:
-                die("No word-splitting space found: %s" % view_line)
+                die("no word-splitting space found: %s" % view_line)
             depot_side = view_line[0:space_index]
             rhs_index = space_index + 1
 
@@ -2209,7 +2209,7 @@ class View(object):
     def convert_client_path(self, clientFile):
         # chop off //client/ part to make it relative
         if not clientFile.startswith(self.client_prefix):
-            die("No prefix '%s' on clientFile '%s'" %
+            die("no prefix '%s' on clientFile '%s'" %
                 (self.client_prefix, clientFile))
         return clientFile[len(self.client_prefix):]
 
@@ -2228,7 +2228,7 @@ class View(object):
                 # assume error is "... file(s) not in client view"
                 continue
             if "clientFile" not in res:
-                die("No clientFile in 'p4 where' output")
+                die("no clientFile in 'p4 where' output")
             if "unmap" in res:
                 # it will list all of them, but only one not unmap-ped
                 continue
@@ -2254,23 +2254,33 @@ class View(object):
         if depot_path in self.client_spec_path_cache:
             return self.client_spec_path_cache[depot_path]
 
-        die( "Error: %s is not found in client spec path" % depot_path )
+        die("%s is not found in client spec path" % depot_path)
         return ""
 
 class P4Unify(Command):
     def __init__(self):
         Command.__init__(self)
-        self.options = [ 
+        self.options = [
           optparse.make_option("--branch", dest="branch"),
         ]
-        self.description = ("Unify the Perforce remotes with the current "
-                            + "HEAD; the Git repo and Perforce must contain "
-                            + "identical content")
+        self.description = ("Unify the Perforce remote used for tracking with "
+                            + "specified Git commit-ish (defaults to HEAD);"
+                            + "this is an assertion that the Git commit-ish and "
+                            + "the Perforce repo are in sync.")
+        self.usage += " [git branch to submit]"
         self.verbose = False
         self.branch = "master"
 
     def run(self, args):
-        system(["git", "update-ref", "refs/remotes/p4/%s" % (self.branch), "HEAD"])
+        commitish = "HEAD"
+
+        if args:
+          if 1 == len(args):
+            commitish = args[0]
+          else:
+            die("too many arguments to git p4t unify")
+
+        system(["git", "update-ref", "refs/remotes/p4/%s" % (self.branch), commitish])
 
         # Create a symbolic ref p4/HEAD pointing to p4/<branch> to allow
         # a convenient shortcut refname "p4".
@@ -2284,8 +2294,8 @@ class P4Branches(Command):
     def __init__(self):
         Command.__init__(self)
         self.options = [ ]
-        self.description = ("Shows the git branches that hold imports and their "
-                            + "corresponding perforce depot paths")
+        self.description = ("Shows the Git branches that hold imports and their "
+                            + "corresponding Perforce depot paths")
         self.verbose = False
 
     def run(self, args):
@@ -2381,7 +2391,7 @@ def main():
             if isValidGitDir(cmd.gitdir + "/.git"):
                 cmd.gitdir += "/.git"
             else:
-                die("fatal: cannot locate git repository at %s" % cmd.gitdir)
+                die("cannot locate Git repository at %s" % cmd.gitdir)
 
         # so git commands invoked from the P4 workspace will succeed
         os.environ["GIT_DIR"] = cmd.gitdir
