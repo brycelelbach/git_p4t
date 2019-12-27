@@ -2264,10 +2264,10 @@ class P4Unify(Command):
           optparse.make_option("--branch", dest="branch"),
         ]
         self.description = ("Unify the Perforce remote used for tracking with "
-                            + "specified Git commit-ish (defaults to HEAD);"
+                            + "specified Git commit-ish (defaults to HEAD); "
                             + "this is an assertion that the Git commit-ish and "
                             + "the Perforce repo are in sync.")
-        self.usage += " [git branch to submit]"
+        self.usage += " [git commitish to sync with]"
         self.verbose = False
         self.branch = "master"
 
