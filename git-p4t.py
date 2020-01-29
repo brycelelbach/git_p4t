@@ -1728,7 +1728,6 @@ class P4Submit(Command, P4UserMap):
             setP4ExecBit(f, mode)
 
         if self.update_shelve:
-            print("all_files = %s" % str(all_files))
             p4_reopen_in_change(self.update_shelve, all_files)
 
         #
