@@ -1528,21 +1528,7 @@ class P4Submit(Command, P4UserMap):
             editor = read_pipe("git var GIT_EDITOR").strip()
         system(["sh", "-c", ('%s "$@"' % editor), editor, template_file])
 
-        # If the file was not saved, prompt to see if this patch should
-        # be skipped.  But skip this verification step if configured so.
-        if gitConfigBool("git-p4.skipSubmitEditCheck"):
-            return True
-
-        # modification time updated means user saved the file
-        if os.stat(template_file).st_mtime > mtime:
-            return True
-
-        while True:
-            response = raw_input("Submit template unchanged. Submit anyway? [y]es, [n]o (skip this patch) ")
-            if response == 'y':
-                return True
-            if response == 'n':
-                return False
+        return True
 
     def get_diff_description(self, editedFiles, filesToAdd, symlinks):
         # diff

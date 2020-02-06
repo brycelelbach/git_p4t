@@ -252,11 +252,6 @@ git-p4.skipSubmitEdit::
 	is submitted.  If this setting is true, though, the editing
 	step is skipped.
 
-git-p4.skipSubmitEditCheck::
-	After editing the p4 change message, 'git p4t' makes sure that
-	the description really was changed by looking at the file
-	modification time.  This option disables that test.
-
 git-p4.allowSubmit::
 	By default, any branch can be used as the source for a 'git p4t
 	submit' operation.  This configuration variable, if set, permits only
