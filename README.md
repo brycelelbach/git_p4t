@@ -90,14 +90,14 @@ To install the [Perforce Helix Command-Line Client (p4)] on Debian or Ubuntu
   Debian package sources:
 
 ```bash
-deb http://package.perforce.com/apt/ubuntu trusty release
+deb http://package.perforce.com/apt/ubuntu xenial release
 ```
 
 The following commands will add Perforce repository and update the list of
   available packages:
 
 ```bash
-sudo bash -c 'echo "deb http://package.perforce.com/apt/ubuntu trusty release" > /etc/apt/sources.list.d/perforce.list'
+sudo bash -c 'echo "deb http://package.perforce.com/apt/ubuntu xenial release" > /etc/apt/sources.list.d/perforce.list'
 sudo apt-get update
 ```
 
@@ -105,7 +105,7 @@ After you've done that, the following will install all of the requried
   prerequisites on Debian or Ubuntu systems:
 
 ```bash
-sudo apt-get install python bash make git perforce-cli asciidoc docbook xmlto
+sudo apt-get install python bash make git helix-cli asciidoc docbook xmlto
 ```
 
 ## Building and Installing
