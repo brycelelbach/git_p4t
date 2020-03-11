@@ -97,6 +97,7 @@ The following commands will add Perforce repository and update the list of
   available packages:
 
 ```bash
+wget -qO - https://package.perforce.com/perforce.pubkey | sudo apt-key add -
 sudo bash -c 'echo "deb http://package.perforce.com/apt/ubuntu xenial release" > /etc/apt/sources.list.d/perforce.list'
 sudo apt-get update
 ```
