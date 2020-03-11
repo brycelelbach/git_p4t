@@ -1567,7 +1567,7 @@ class P4Submit(Command, P4UserMap):
 
         (p4User, gitEmail) = self.p4UserForCommit(id)
 
-        diff = read_pipe_lines("git diff-tree --no-renames -r %s \"%s^\" \"%s\"" % (self.diffOpts, id, id))
+        diff = read_pipe_lines("git diff-tree --ignore-submodules --no-renames -r %s \"%s^\" \"%s\"" % (self.diffOpts, id, id))
         filesToAdd = set()
         filesToChangeType = set()
         filesToDelete = set()
@@ -1644,7 +1644,7 @@ class P4Submit(Command, P4UserMap):
             else:
                 die("unknown modifier %s for %s" % (modifier, path))
 
-        diffcmd = "git diff-tree --no-renames --full-index -p \"%s\"" % (id)
+        diffcmd = "git diff-tree --ignore-submodules --no-renames --full-index -p \"%s\"" % (id)
         patchcmd = diffcmd + " | git apply "
         tryPatchCmd = patchcmd + "--check -"
         applyPatchCmd = patchcmd + "--check --apply -"
@@ -1948,20 +1948,12 @@ class P4Submit(Command, P4UserMap):
         if self.verbose:
             print "Origin branch is " + self.origin
 
-        self.useClientSpec = False
-        if gitConfigBool("git-p4.useclientspec"):
-            self.useClientSpec = True
-        if self.useClientSpec:
-            self.clientSpecDirs = getClientSpec()
+        self.clientSpecDirs = getClientSpec()
 
         # Check for the existence of P4 branches
         branchesDetected = (len(p4BranchesInGit().keys()) > 1)
 
-        if self.useClientSpec and not branchesDetected:
-            # all files are relative to the client spec
-            self.clientPath = getClientRoot()
-        else:
-            self.clientPath = p4Where(self.depotPath)
+        self.clientPath = p4Where(self.depotPath)
 
         if self.clientPath == "":
             die("cannot locate Perforce checkout of %s in client view" % self.depotPath)
