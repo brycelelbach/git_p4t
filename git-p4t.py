@@ -1514,7 +1514,7 @@ class P4Submit(Command, P4UserMap):
            message.  Return true if okay to continue with the submit."""
 
         # if configured to skip the editing part, just submit
-        if gitConfigBool("git-p4.skipSubmitEdit"):
+        if not gitConfigBool("git-p4.submitEdit"):
             return True
 
         # look at the modification time, to check later if the user saved

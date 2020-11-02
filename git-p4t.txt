@@ -247,10 +247,9 @@ git-p4.allowMissingP4Users::
 	cannot find an author in the p4 user map.  This setting
 	submits the change regardless.
 
-git-p4.skipSubmitEdit::
-	The submit process invokes the editor before each p4 change
-	is submitted.  If this setting is true, though, the editing
-	step is skipped.
+git-p4.submitEdit::
+	If this setting is true, the p4 submit process invokes the editor
+	before each p4 change is submitted.
 
 git-p4.allowSubmit::
 	By default, any branch can be used as the source for a 'git p4t
