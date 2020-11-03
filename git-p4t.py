@@ -188,7 +188,7 @@ def read_pipe(c, ignore_error=False):
             die('command failed: %s: %s' % (str(c), err))
     return out
 
-def read_pipe_text(c):
+def try_read_pipe(c):
     """ Read output from a command with trailing whitespace stripped.
         On error, returns None.
     """
@@ -607,7 +607,7 @@ def p4Where(depotPath):
     return clientPath
 
 def currentGitBranch():
-    return read_pipe_text(["git", "symbolic-ref", "--short", "-q", "HEAD"])
+    return try_read_pipe(["git", "symbolic-ref", "--short", "-q", "HEAD"])
 
 def isValidGitDir(path):
     return git_dir(path) != None
@@ -1256,6 +1256,7 @@ class P4Submit(Command, P4UserMap):
                 optparse.make_option("--conflict", dest="conflict_behavior",
                                      choices=self.conflict_behavior_choices),
                 optparse.make_option("--branch", dest="branch"),
+                optparse.make_option("--squash", dest="squash", action="store_true"),
                 optparse.make_option("--shelve", dest="shelve", action="store_true",
                                      help="Shelve instead of submit. Shelved files are reverted, "
                                      "restoring the workspace to the state before the shelve"),
@@ -1969,11 +1970,11 @@ class P4Submit(Command, P4UserMap):
 
         chdir(self.clientPath, is_client_path=True)
         if self.dry_run:
-            print "Would synchronize p4 checkout in %s" % self.clientPath
+            print("Would synchronize p4 checkout in %s" % self.clientPath)
         else:
-            print "Synchronizing p4 checkout..."
+            print("Synchronizing p4 checkout...")
             if new_client_dir:
-                # old one was destroyed, and maybe nobody told p4
+                # Old one was destroyed, and maybe nobody told p4.
                 p4_sync("...", "-f")
             else:
                 p4_sync("...")
@@ -1985,13 +1986,48 @@ class P4Submit(Command, P4UserMap):
         else:
             commitish = 'HEAD'
 
+        git_target_hash = read_pipe(["git", "rev-parse", commitish]).strip()
+        p4_target_hash = read_pipe(["git", "rev-parse", self.origin]).strip()
+
+        if self.squash and not self.dry_run:
+            squash_hash = None
+
+            current_head = currentGitBranch()
+            if not current_head:
+                # We're detached and not on a branch, so just figure out what
+                # commit we're at.
+                current_head = read_pipe(["git", "rev-parse", "HEAD"]).strip()
+
+            try:
+                # Detach ourselves from the current branch.
+                system(["git", "-c", "advice.detachedHead=false", "checkout", git_target_hash])
+
+                message = read_pipe(["git", "log", "--reverse",
+                                     "--format=%B%ngit-commit %H%ngit-author %an <%ae>%n",
+                                     "%s..%s" % (p4_target_hash, git_target_hash)])
+
+                system(["git", "squash", p4_target_hash])
+
+                write_pipe(["git", "commit", "-a", "--file=-"], message)
+                # Git garbage collection should clean this orphaned commit up
+                # after a few weeks.
+
+                squash_hash = read_pipe(["git", "rev-parse", "HEAD"]).strip()
+
+                print("Squashing %s..%s into %s" % (p4_target_hash, git_target_hash, squash_hash))
+            finally:
+                system(["git", "checkout", current_head])
+
+            # Set the target to the orphaned squash commit.
+            commitish = squash_hash
+
         if os.system("git show-ref --quiet --verify refs/%s" % (self.origin)) == 0:
-          for line in read_pipe_lines(["git", "rev-list", "--no-merges", "%s..%s" % (self.origin, commitish)]):
-              commits.append(line.strip())
-          commits.reverse()
+            for line in read_pipe_lines(["git", "rev-list", "--no-merges", "%s..%s" % (self.origin, commitish)]):
+                commits.append(line.strip())
+            commits.reverse()
         else:
-          # No origin, assume nothing should be committed.
-          pass
+            # No origin, assume nothing should be committed.
+            pass
 
         if self.preserveUser or gitConfigBool("git-p4.skipUserNameCheck"):
             self.checkAuthorship = False

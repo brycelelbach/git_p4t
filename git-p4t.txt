@@ -136,6 +136,10 @@ These options can be used to modify 'git p4t submit' behavior.
 	submit manually or revert.  This option always stops after the
 	first (oldest) commit.  Git tags are not exported to p4.
 
+--squash::
+  Squash all Git commits that would be applied to p4 into a single
+  changelist.
+
 --shelve::
 	Instead of submitting create a series of shelved changelists.
 	After creating each shelve, the relevant files are reverted/deleted.
