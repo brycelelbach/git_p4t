@@ -1270,6 +1270,7 @@ class P4Submit(Command, P4UserMap):
         self.detectRenames = False
         self.preserveUser = gitConfigBool("git-p4.preserveUser")
         self.dry_run = False
+        self.squash = False
         self.shelve = False
         self.update_shelve = None
         self.prepare_p4_only = False
