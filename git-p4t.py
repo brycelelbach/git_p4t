@@ -2007,9 +2007,8 @@ class P4Submit(Command, P4UserMap):
                                      "--format=%B%ngit-commit %H%ngit-author %an <%ae>%n",
                                      "%s..%s" % (p4_target_hash, git_target_hash)])
 
-                system(["git", "squash", p4_target_hash])
-
-                write_pipe(["git", "commit", "-a", "--file=-"], message)
+                system(["git", "reset", "--soft", p4_target_hash])
+                write_pipe(["git", "commit", "--file=-"], message)
                 # Git garbage collection should clean this orphaned commit up
                 # after a few weeks.
 
